@@ -1,0 +1,83 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: userId
+// Fields:
+//   - displayName: string (optional)
+//   - email: string (required)
+//   - createdAt: string (required)
+//
+// Collection: workspaces
+// Document ID: guid
+// Fields:
+//   - userId: string (required)
+//   - title: string (required)
+//   - description: string (optional)
+//   - createdAt: string (required)
+//   - updatedAt: string (required)
+//
+// Collection: documents
+// Document ID: guid
+// Fields:
+//   - workspaceId: string (required)
+//   - userId: string (required)
+//   - title: string (required)
+//   - content: string (required)
+//   - type: string (required)
+//   - createdAt: string (required)
+//
+// Collection: assets
+// Document ID: guid
+// Fields:
+//   - workspaceId: string (required)
+//   - userId: string (required)
+//   - type: string (required) - e.g., 'image', 'video', 'paper', 'audio'
+//   - title: string (required)
+//   - url: string (optional)
+//   - content: string (optional)
+//   - aspectRatio: string (optional)
+//   - prompt: string (optional)
+//   - createdAt: string (required)
+// ===============================================================
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidDoc(reqData) {
+       return reqData.keys().hasAll(['userId', 'createdAt']);
+    }
+
+    match /users/{userId} {
+      allow read, update: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.email is string;
+      allow delete: if false;
+    }
+
+    match /workspaces/{workspaceId} {
+      allow read, update, delete: if isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /documents/{documentId} {
+      allow read, update, delete: if isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /assets/{assetId} {
+      allow read, update, delete: if isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+  }
+}

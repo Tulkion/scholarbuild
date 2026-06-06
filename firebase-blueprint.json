@@ -1,0 +1,77 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile data",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "Workspace": {
+      "title": "Workspace",
+      "description": "A workspace containing documents and papers",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "createdAt", "updatedAt"]
+    },
+    "Document": {
+      "title": "Document",
+      "description": "Source documents in the workspace",
+      "type": "object",
+      "properties": {
+        "workspaceId": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "type": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["workspaceId", "userId", "title", "content", "type", "createdAt"]
+    },
+    "Asset": {
+      "title": "Asset",
+      "description": "Generated images, videos, audio, papers.",
+       "type": "object",
+       "properties": {
+           "workspaceId": { "type": "string" },
+           "userId": { "type": "string" },
+           "type": { "type": "string" },
+           "title": { "type": "string" },
+           "url": { "type": "string" },
+           "content": { "type": "string" },
+           "aspectRatio": { "type": "string" },
+           "prompt": { "type": "string" },
+           "createdAt": { "type": "string", "format": "date-time" }
+       },
+       "required": ["workspaceId", "userId", "type", "title", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles stored safely"
+    },
+    "/workspaces/{workspaceId}": {
+      "schema": { "$ref": "#/entities/Workspace" },
+      "description": "User workspaces"
+    },
+    "/documents/{documentId}": {
+      "schema": { "$ref": "#/entities/Document" },
+      "description": "Source documents containing research"
+    },
+    "/assets/{assetId}": {
+        "schema": { "$ref": "#/entities/Asset" },
+        "description": "Generated assets like images, videos or papers"
+    }
+  }
+}

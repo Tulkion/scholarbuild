@@ -1,0 +1,8 @@
+{
+  "name": "ScholarSpace",
+  "description": "An AI-powered academic workspace that analyzes documents, generates papers and presentations, and includes a live voice tutor.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}
